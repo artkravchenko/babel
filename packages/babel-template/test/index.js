@@ -118,14 +118,6 @@ describe("@babel/template", function() {
       expect(result[1].expression.name).toBe("ANOTHER_ID");
     });
 
-    it("should throw if unknown replacements are provided", () => {
-      expect(() => {
-        template(`
-          ID;
-        `)({ ID: t.identifier("someIdent"), ANOTHER_ID: null });
-      }).toThrow('Unknown substitution "ANOTHER_ID" given');
-    });
-
     it("should throw if placeholders are not given explicit values", () => {
       expect(() => {
         template(`
@@ -219,7 +211,7 @@ describe("@babel/template", function() {
     });
   });
 
-  describe.only(".syntacticPlaceholders", () => {
+  describe(".syntacticPlaceholders", () => {
     it("works in function body", () => {
       const output = template(`function f() %%A%%`)({
         A: t.blockStatement([]),
@@ -315,6 +307,55 @@ describe("@babel/template", function() {
             FOO: t.numericLiteral(1),
           });
           expect(generator(output).code).toMatchInlineSnapshot(`"FOO + 1;"`);
+        });
+      });
+    });
+  });
+
+  describe(".throwIfUnusedReplacementsProvided", () => {
+    describe("option value", () => {
+      describe("true", () => {
+        it("should throw if unknown replacements are provided", () => {
+          const options = {
+            throwIfUnusedReplacementsProvided: true,
+          };
+          const replacements = {
+            ID: t.identifier("someIdent"),
+            ANOTHER_ID: null,
+          };
+
+          expect(() => {
+            template(`ID;`, options)(replacements);
+          }).toThrow('Unknown substitution "ANOTHER_ID" given');
+        });
+      });
+
+      describe("false", () => {
+        it("should not throw if unknown replacements are provided", () => {
+          const options = {
+            throwIfUnusedReplacementsProvided: false,
+          };
+          const replacements = {
+            ID: t.identifier("someIdent"),
+            ANOTHER_ID: null,
+          };
+
+          expect(() => {
+            template(`ID;`, options)(replacements);
+          }).not.toThrow('Unknown substitution "ANOTHER_ID" given');
+        });
+      });
+
+      describe("undefined", () => {
+        it("should throw if unknown replacements are provided", () => {
+          const replacements = {
+            ID: t.identifier("someIdent"),
+            ANOTHER_ID: null,
+          };
+
+          expect(() => {
+            template(`ID;`)(replacements);
+          }).toThrow('Unknown substitution "ANOTHER_ID" given');
         });
       });
     });

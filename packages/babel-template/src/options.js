@@ -43,6 +43,14 @@ export type PublicOpts = {
    * otherwise as 'false'.
    */
   syntacticPlaceholders?: ?boolean,
+
+  /**
+   * 'true' to throw if unused replacement options are provided to the template
+   * or 'false' to silently ignore these replacements.
+   *
+   * Defaults to 'true'.
+   */
+  throwIfUnusedReplacementsProvided?: ?boolean,
 };
 
 export type TemplateOpts = {|
@@ -51,6 +59,7 @@ export type TemplateOpts = {|
   placeholderPattern: RegExp | false | void,
   preserveComments: boolean | void,
   syntacticPlaceholders: boolean | void,
+  throwIfUnusedReplacementsProvided: boolean | void,
 |};
 
 export function merge(a: TemplateOpts, b: TemplateOpts): TemplateOpts {
@@ -59,6 +68,7 @@ export function merge(a: TemplateOpts, b: TemplateOpts): TemplateOpts {
     placeholderPattern = a.placeholderPattern,
     preserveComments = a.preserveComments,
     syntacticPlaceholders = a.syntacticPlaceholders,
+    throwIfUnusedReplacementsProvided = a.throwIfUnusedReplacementsProvided,
   } = b;
 
   return {
@@ -70,6 +80,7 @@ export function merge(a: TemplateOpts, b: TemplateOpts): TemplateOpts {
     placeholderPattern,
     preserveComments,
     syntacticPlaceholders,
+    throwIfUnusedReplacementsProvided,
   };
 }
 
@@ -83,6 +94,7 @@ export function validate(opts: mixed): TemplateOpts {
     placeholderPattern,
     preserveComments,
     syntacticPlaceholders,
+    throwIfUnusedReplacementsProvided,
     ...parser
   } = opts || {};
 
@@ -126,6 +138,16 @@ export function validate(opts: mixed): TemplateOpts {
     );
   }
 
+  if (
+    throwIfUnusedReplacementsProvided != null &&
+    typeof throwIfUnusedReplacementsProvided !== "boolean"
+  ) {
+    throw new Error(
+      "'.throwIfUnusedReplacementsProvided' must be" +
+        " a boolean, null, or undefined",
+    );
+  }
+
   return {
     parser,
     placeholderWhitelist: placeholderWhitelist || undefined,
@@ -134,6 +156,10 @@ export function validate(opts: mixed): TemplateOpts {
     preserveComments: preserveComments == null ? false : preserveComments,
     syntacticPlaceholders:
       syntacticPlaceholders == null ? undefined : syntacticPlaceholders,
+    throwIfUnusedReplacementsProvided:
+      throwIfUnusedReplacementsProvided == null
+        ? true
+        : throwIfUnusedReplacementsProvided,
   };
 }
 

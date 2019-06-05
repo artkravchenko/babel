@@ -35,6 +35,7 @@ export default function literalTemplate<T>(
           replacements
             ? Object.assign(replacements, defaultReplacements)
             : defaultReplacements,
+          opts.throwIfUnusedReplacementsProvided,
         ),
       );
     };

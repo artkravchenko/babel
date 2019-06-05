@@ -18,6 +18,12 @@ export default function stringTemplate<T>(
 
     if (!metadata) metadata = parseAndBuildMetadata(formatter, code, opts);
 
-    return formatter.unwrap(populatePlaceholders(metadata, replacements));
+    return formatter.unwrap(
+      populatePlaceholders(
+        metadata,
+        replacements,
+        opts.throwIfUnusedReplacementsProvided,
+      ),
+    );
   };
 }
