@@ -219,7 +219,7 @@ describe("@babel/template", function() {
     });
   });
 
-  describe.only(".syntacticPlaceholders", () => {
+  describe(".syntacticPlaceholders", () => {
     it("works in function body", () => {
       const output = template(`function f() %%A%%`)({
         A: t.blockStatement([]),
