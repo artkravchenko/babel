@@ -7,6 +7,7 @@ import type { Metadata, Placeholder } from "./parse";
 export default function populatePlaceholders(
   metadata: Metadata,
   replacements: TemplateReplacements,
+  throwIfUnusedReplacementsProvided: boolean | void,
 ): BabelNodeFile {
   const ast = t.cloneNode(metadata.ast);
 
@@ -25,11 +26,14 @@ export default function populatePlaceholders(
         );
       }
     });
-    Object.keys(replacements).forEach(key => {
-      if (!metadata.placeholderNames.has(key)) {
-        throw new Error(`Unknown substitution "${key}" given`);
-      }
-    });
+
+    if (throwIfUnusedReplacementsProvided) {
+      Object.keys(replacements).forEach(key => {
+        if (!metadata.placeholderNames.has(key)) {
+          throw new Error(`Unknown substitution "${key}" given`);
+        }
+      });
+    }
   }
 
   // Process in reverse order to AST mutation doesn't change indices that
